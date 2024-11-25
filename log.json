@@ -1,0 +1,31 @@
+[
+    {
+        "command": "LOAD_CONST",
+        "A": 30,
+        "B": 3,
+        "C": 12,
+        "bytes": "f00060000c"
+    },
+    {
+        "command": "UNARY_MINUS",
+        "A": 22,
+        "B": 5,
+        "C": 6,
+        "D": 2,
+        "bytes": "b000a00302"
+    },
+    {
+        "command": "READ_MEM",
+        "A": 16,
+        "B": 7,
+        "C": 3,
+        "bytes": "8000e00003"
+    },
+    {
+        "command": "WRITE_MEM",
+        "A": 18,
+        "B": 3,
+        "C": 7,
+        "bytes": "9000600007"
+    }
+]
