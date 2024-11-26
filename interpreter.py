@@ -3,7 +3,7 @@ import sys
 
 
 def interpret(binary_file, memory_range, output_file):
-    memory = [0] * 40  # Example memory size
+    memory = [0] * 1024  # Example memory size
 
     def fetch_command(binary, length):
         if length == 5:
@@ -40,12 +40,12 @@ def interpret(binary_file, memory_range, output_file):
                 memory[B] = memory[C]
             elif A == 18:  # WRITE_MEM
                 A, B, C = fetch_command(word, 5)
-                print(f"WRITE_MEM: memory[memory[{C}]] = memory[{B}]")  # Debug
+                print(f"WRITE_MEM: memory[{C}] = memory[{B}]")  # Debug
                 memory[memory[C]] = memory[B]
             elif A == 22:  # UNARY_MINUS
                 A, B, C, D = fetch_command_with_four(word)
                 print(f"UNARY_MINUS: memory[{D}] = -memory[{C}]")  # Debug
-                memory[D] = -memory[C]
+                memory[D] = memory[C] + B
             pc += 5
         else:
             print(f"Incomplete data at pc={pc}")  # Debug
