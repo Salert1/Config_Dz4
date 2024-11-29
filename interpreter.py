@@ -7,17 +7,17 @@ def interpret(binary_file, memory_range, output_file):
 
     def fetch_command(binary, length):
         if length == 5:
-            A = (binary >> 35) & 0x1F
-            B = (binary >> 21) & 0x3FFF
-            C = (binary >> 7) & 0x3FFF
+            A = (binary >> 32) & 0b11111
+            B = (binary >> 18) & 0x3FF
+            C = (binary >> 5) & 0x3FFF
             return A, B, C
         return None
 
     def fetch_command_with_four(binary):
-        A = (binary >> 35) & 0x1F
-        B = (binary >> 21) & 0x3FFF
+        A = (binary >> 35) & 0b11111
+        B = (binary >> 21) & 0x7FFF
         C = (binary >> 7) & 0x3FFF
-        D = binary & 0x7F
+        D = binary & 0x3FF
         return A, B, C, D
 
     with open(binary_file, 'rb') as file:
@@ -25,9 +25,10 @@ def interpret(binary_file, memory_range, output_file):
 
     pc = 0
     while pc < len(binary_data):
-        if len(binary_data[pc:pc + 5]) >= 5:
+        # if len(binary_data[pc:pc + 5]) >= 21:
             word = int.from_bytes(binary_data[pc:pc + 5], 'big')
-            A = (word >> 35) & 0x1F
+            A = (word >> 32) & 0b11111
+            print(A)
 
             if A == 30:  # LOAD_CONST
                 A, B, C = fetch_command(word, 5)
@@ -47,9 +48,9 @@ def interpret(binary_file, memory_range, output_file):
                 print(f"UNARY_MINUS: memory[{D}] = -memory[{C}]")  # Debug
                 memory[D] = memory[C] + B
             pc += 5
-        else:
-            print(f"Incomplete data at pc={pc}")  # Debug
-            break
+        # else:
+        #     print(f"Incomplete data at pc={pc}")  # Debug
+        #     break
 
     # Debug before writing to file
     print(f"Final memory state: {memory[memory_range[0]:memory_range[1]]}")
@@ -71,4 +72,4 @@ if __name__ == "__main__":
     output_file = sys.argv[3]
     interpret(binary_file, memory_range, output_file)
 
-#python interpreter.py output.bin 0:100 result.json
+#python interpreter.py output.bin 0:1000 result.json

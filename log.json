@@ -2,30 +2,30 @@
     {
         "command": "LOAD_CONST",
         "A": 30,
-        "B": 3,
-        "C": 12,
-        "bytes": "f00060000c"
-    },
-    {
-        "command": "UNARY_MINUS",
-        "A": 22,
-        "B": 5,
-        "C": 6,
-        "D": 2,
-        "bytes": "b000a00302"
+        "B": 322,
+        "C": 476,
+        "bytes": "1e28ee0000"
     },
     {
         "command": "READ_MEM",
         "A": 16,
-        "B": 7,
-        "C": 3,
-        "bytes": "8000e00003"
+        "B": 385,
+        "C": 26,
+        "bytes": "18300d00"
     },
     {
         "command": "WRITE_MEM",
         "A": 18,
-        "B": 3,
-        "C": 7,
-        "bytes": "9000600007"
+        "B": 283,
+        "C": 477,
+        "bytes": "1a23ee00"
+    },
+    {
+        "command": "UNARY_MINUS",
+        "A": 22,
+        "B": 403,
+        "C": 322,
+        "D": 439,
+        "bytes": "1e32093c08"
     }
 ]

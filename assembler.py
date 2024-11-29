@@ -3,6 +3,32 @@ import struct
 import sys
 
 
+def serialize_load(A,B,C):
+    bytes_array = [0] * 5
+    bytes_array[0] = (A & 0b11111) | ((B << 3) & 0b111)
+    bytes_array[1] = ((B >> 3) & 0b1111111) | ((C & 0b1))
+    bytes_array[2] = (C >> 1) & 0b11111111
+    bytes_array[3] = (C >> (1 + 8)) & 0b11111111
+    bytes_array[4] = (C >> (1 + 8 + 8)) & 0b11111
+    return bytes(bytes_array)
+
+def serialize_read(A,B,C):
+    bytes_array = [0] * 4
+    bytes_array[0] = (A & 0b11111) | ((B & 0b111) << 3)
+    bytes_array[1] = ((B >> 3) & 0b1111111) | ((C & 0b1) << 1)
+    bytes_array[2] = (C >> 1) & 0b11111111
+    bytes_array[3] = (C >> (1 + 8)) & 0b1
+    return bytes(bytes_array)
+
+def serialize_minus(A,B,C,D):
+    bytes_array = [0] * 5
+    bytes_array[0] = (A & 0b11111) | ((B & 0b111) << 3)
+    bytes_array[1] = ((B >> 3) & 0b11111111)
+    bytes_array[2] = ((B >> 4) & 0b1111) | ((C & 0b1111) >> 4)
+    bytes_array[3] = (C >> 4) & 0b11111 | ((D & 0b111) << 3)
+    bytes_array[4] = (C >> 3) & 0b11111
+    return bytes(bytes_array)
+
 def assemble(input_file, output_bin, log_file):
     commands = {
         "LOAD_CONST": 30,
@@ -34,19 +60,29 @@ def assemble(input_file, output_bin, log_file):
                     raise ValueError(f"C (constant) out of range: {C}")
 
                 # Формирование команды
-                word = (A << 35) | (B << 21) | (C << 7)
+                word = ((A & 0x1F) << 35) | ((B & 0x3FFF) << 21) | ((C & 0x3FFF) << 7)
+                # word = ((A & 0x1E)) | ((B & 0x143)) | ((C & 0x1DC))
                 if word >= (1 << 40):
                     raise ValueError(f"Word value too large for 5 bytes: {word} (cmd={cmd}, A={A}, B={B}, C={C})")
 
-                binary_data.append(word.to_bytes(5, 'big'))
-                log_data.append({"command": cmd, "A": A, "B": B, "C": C, "bytes": word.to_bytes(5, 'big').hex()})
-            elif cmd in ["READ_MEM", "WRITE_MEM"]:
+                binary_data.append(serialize_load(A,B,C))
+                log_data.append({"command": cmd, "A": A, "B": B, "C": C, "bytes": serialize_load(A,B,C).hex()})
+                print(word.to_bytes(5, 'big').hex())
+                print(serialize_load(A,B,C).hex())
+            elif cmd  == "READ_MEM":
                 A = commands[cmd]
                 B = int(parts[1])
                 C = int(parts[2])
-                word = (A << 35) | (B << 21) | (C << 7)
-                binary_data.append(word.to_bytes(5, 'big'))
-                log_data.append({"command": cmd, "A": A, "B": B, "C": C, "bytes": word.to_bytes(5, 'big').hex()})
+                word = ((A & 0x1F) << 35) | ((B & 0x3FFF) << 21) | ((C & 0x3FFF) << 7)
+                binary_data.append(serialize_read(A,B,C))
+                log_data.append({"command": cmd, "A": A, "B": B, "C": C, "bytes": serialize_read(A,B,C).hex()})
+            elif cmd == "WRITE_MEM":
+                A = commands[cmd]
+                B = int(parts[1])
+                C = int(parts[2])
+                word = ((A & 0x1F) << 35) | ((B & 0x3FFF) << 21) | ((C & 0x3FFF) << 7)
+                binary_data.append(serialize_read(A, B, C))
+                log_data.append({"command": cmd, "A": A, "B": B, "C": C, "bytes": serialize_read(A, B, C).hex()})
             elif cmd == "UNARY_MINUS":
                 A = commands[cmd]  # Код команды (в данном случае, A = 22)
                 B = int(parts[1])  # Смещение
@@ -60,7 +96,7 @@ def assemble(input_file, output_bin, log_file):
                     raise ValueError(f"Operands out of range: B={B}, C={C}, D={D}")
 
                 # Теперь собираем команду в 5 байтов:
-                word = (A << 35) | (B << 21) | (C << 7) | D
+                word = ((A & 0x1F) << 35) | ((B & 0x7FFF) << 21) | ((C & 0x3FF) << 7) | (D & 0x3FF)
 
                 # Проверяем, не выходит ли значение за пределы 5 байтов
                 if word >= (1 << 40):
@@ -68,7 +104,7 @@ def assemble(input_file, output_bin, log_file):
                         f"Word value {word} is too large for 5 bytes (cmd={cmd}, A={A}, B={B}, C={C}, D={D})")
 
                 # Добавляем результат в бинарные данные
-                binary_data.append(word.to_bytes(5, 'big'))
+                binary_data.append(serialize_minus(A, B, C, D))
 
                 # Логируем команду
                 log_data.append({
@@ -77,7 +113,7 @@ def assemble(input_file, output_bin, log_file):
                     "B": B,
                     "C": C,
                     "D": D,
-                    "bytes": word.to_bytes(5, 'big').hex()
+                    "bytes": serialize_minus(A, B, C, D).hex()
                 })
 
     # Save binary data
@@ -100,3 +136,7 @@ if __name__ == "__main__":
     log_file = sys.argv[3]
     assemble(input_file, output_bin, log_file)
 #python assembler.py test.asm output.bin log.json
+# "f02840ee00"
+# "8030200d00"
+# "902360ee80"
+# "b03260a1b7"
