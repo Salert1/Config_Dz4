@@ -2,30 +2,91 @@
     {
         "command": "LOAD_CONST",
         "A": 30,
-        "B": 322,
-        "C": 476,
-        "bytes": "5e28ee0000"
+        "B": 0,
+        "C": 10,
+        "bytes": "1e00050000"
     },
     {
-        "command": "READ_MEM",
-        "A": 16,
-        "B": 385,
-        "C": 26,
-        "bytes": "30300d00"
+        "command": "LOAD_CONST",
+        "A": 30,
+        "B": 1,
+        "C": 20,
+        "bytes": "3e000a0000"
     },
     {
-        "command": "WRITE_MEM",
-        "A": 18,
-        "B": 283,
-        "C": 477,
-        "bytes": "72a3ee00"
+        "command": "LOAD_CONST",
+        "A": 30,
+        "B": 2,
+        "C": 30,
+        "bytes": "5e000f0000"
+    },
+    {
+        "command": "LOAD_CONST",
+        "A": 30,
+        "B": 3,
+        "C": 40,
+        "bytes": "7e00140000"
+    },
+    {
+        "command": "LOAD_CONST",
+        "A": 30,
+        "B": 4,
+        "C": 50,
+        "bytes": "9e00190000"
+    },
+    {
+        "command": "LOAD_CONST",
+        "A": 30,
+        "B": 5,
+        "C": 60,
+        "bytes": "be001e0000"
     },
     {
         "command": "UNARY_MINUS",
         "A": 22,
-        "B": 403,
-        "C": 322,
-        "D": 439,
-        "bytes": "763220d46d"
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "bytes": "1600000000"
+    },
+    {
+        "command": "UNARY_MINUS",
+        "A": 22,
+        "B": 1,
+        "C": 1,
+        "D": 1,
+        "bytes": "3600104000"
+    },
+    {
+        "command": "UNARY_MINUS",
+        "A": 22,
+        "B": 2,
+        "C": 2,
+        "D": 2,
+        "bytes": "5600208000"
+    },
+    {
+        "command": "UNARY_MINUS",
+        "A": 22,
+        "B": 3,
+        "C": 3,
+        "D": 3,
+        "bytes": "760030c000"
+    },
+    {
+        "command": "UNARY_MINUS",
+        "A": 22,
+        "B": 4,
+        "C": 4,
+        "D": 4,
+        "bytes": "9600400001"
+    },
+    {
+        "command": "UNARY_MINUS",
+        "A": 22,
+        "B": 5,
+        "C": 5,
+        "D": 5,
+        "bytes": "b600504001"
     }
 ]

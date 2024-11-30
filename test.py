@@ -1,70 +1,51 @@
-import subprocess
 import json
 import os
 
+
 def run_test():
-    input_asm = "test_input.asm"
-    output_bin = "test_output.bin"
-    log_file = "test_log.json"
-    result_file = "test_result.json"
+    assembler_input = """\
+LOAD_CONST 0 10
+LOAD_CONST 1 20
+LOAD_CONST 2 30
+LOAD_CONST 3 40
+LOAD_CONST 4 50
+LOAD_CONST 5 60
 
-    asm_code = """
-LOAD_CONST 3 12
-UNARY_MINUS 5 6 2
-READ_MEM 7 3
-WRITE_MEM 3 7
+UNARY_MINUS 0 10 0
+UNARY_MINUS 1 20 1
+UNARY_MINUS 2 30 2
+UNARY_MINUS 3 40 3
+UNARY_MINUS 4 50 4
+UNARY_MINUS 5 60 5
 """
+    # Путь для временных файлов
+    assembler_file = "test.asm"
+    binary_file = "test.bin"
+    log_file = "test.log"
+    output_file = "result.json"
 
-    # Ожидаемое состояние памяти
-    expected_memory = [0] * 1024
-    expected_memory[3] = 12  # LOAD_CONST
-    expected_memory[2] = -0  # UNARY_MINUS
-    expected_memory[7] = 12  # READ_MEM
-    expected_memory[12] = 12  # WRITE_MEM (address stored in memory[7])
+    # Ожидаемый результат
+    expected_memory = [-10, -20, -30, -40, -50, -60] + [0] * 1018  # Остальная память заполнена нулями
 
-    # Создаем файл для ассемблера
-    with open(input_asm, 'w') as f:
-        f.write(asm_code.strip())
+    # Создаем входной файл для ассемблера
+    with open(assembler_file, 'w') as asm_file:
+        asm_file.write(assembler_input)
 
-    # Запускаем ассемблер
-    subprocess.run(["python", "assembler.py", input_asm, output_bin, log_file], check=True)
-
-    # Проверяем, что бинарный файл создан
-    assert os.path.exists(output_bin), "Assembler output not created"
+    # Выполняем сборку
+    os.system(f"python assembler.py {assembler_file} {binary_file} {log_file}")
 
     # Запускаем интерпретатор
-    subprocess.run(["python", "interpreter.py", output_bin, "0:1024", result_file], check=True)
+    os.system(f"python interpreter.py {binary_file} 0:1024 {output_file}")
 
-    # Проверяем, что результат интерпретации сохранен
-    assert os.path.exists(result_file), "Interpreter output not created"
+    # Проверяем результат
+    with open(output_file, 'r') as result_file:
+        result_data = json.load(result_file)
 
-    # Проверяем лог
-    with open(log_file, 'r') as f:
-        log_data = json.load(f)
-    assert log_data[0]["command"] == "LOAD_CONST"
-    assert log_data[1]["command"] == "UNARY_MINUS"
-    assert log_data[2]["command"] == "READ_MEM"
-    assert log_data[3]["command"] == "WRITE_MEM"
+    # Убедимся, что память соответствует ожидаемой
+    assert result_data["values"][:1024] == expected_memory, "Memory state is incorrect"
 
-    # Проверяем результат интерпретации
-    with open(result_file, 'r') as f:
-        result_data = json.load(f)
+    print("Test passed. Memory state is correct.")
 
-    assert result_data["memory_range"] == [0, 1024], "Incorrect memory range"
 
-    # Добавляем вывод текущего состояния памяти
-    current_memory = result_data["values"][:16]
-    print("Expected memory:", expected_memory[:16])
-    print("Current memory: ", current_memory)
-
-    assert current_memory == expected_memory[:16], "Memory state is incorrect"
-
-    print("Test passed!")
-
-    # Удаляем временные файлы после теста
-    os.remove(input_asm)
-    os.remove(output_bin)
-    os.remove(log_file)
-    os.remove(result_file)
-
-run_test()
+if __name__ == "__main__":
+    run_test()

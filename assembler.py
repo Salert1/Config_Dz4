@@ -60,7 +60,6 @@ def assemble(input_file, output_bin, log_file):
             if not parts:
                 continue
             cmd = parts[0]
-            print(parts[0],parts[1],parts[2])
             if cmd == "LOAD_CONST":
                 A = 30
                 B = int(parts[1])  # Адрес
@@ -90,8 +89,6 @@ def assemble(input_file, output_bin, log_file):
                 word = ((A & 0x1F) << 35) | ((B & 0x3FFF) << 21) | ((C & 0x3FFF) << 7)
                 binary_data.append(serialize_read(A,B,C))
                 log_data.append({"command": cmd, "A": A, "B": B, "C": C, "bytes": serialize_read(A,B,C).hex()})
-                print(A, B, C)
-                print(deserialize_read(serialize_read(A, B, C)))
             elif cmd == "WRITE_MEM":
                 A = commands[cmd]
                 B = int(parts[1])
@@ -99,8 +96,6 @@ def assemble(input_file, output_bin, log_file):
                 word = ((A & 0x1F) << 35) | ((B & 0x3FFF) << 21) | ((C & 0x3FFF) << 7)
                 binary_data.append(serialize_read(A, B, C))
                 log_data.append({"command": cmd, "A": A, "B": B, "C": C, "bytes": serialize_read(A, B, C).hex()})
-                print(A,B,C)
-                print(deserialize_read(serialize_read(A,B,C)))
             elif cmd == "UNARY_MINUS":
                 A = commands[cmd]  # Код команды (в данном случае, A = 22)
                 B = int(parts[1])  # Смещение
@@ -126,7 +121,6 @@ def assemble(input_file, output_bin, log_file):
                 binary_data.append(g)
                 print(A, B, C, D)
 
-                # print(deserialize_minus(g))
 
                 # Логируем команду
                 log_data.append({

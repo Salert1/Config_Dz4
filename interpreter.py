@@ -15,8 +15,7 @@ def interpret(binary_file, memory_range, output_file):
     def deserialize_load(byts):
         A = byts[0] & 0b11111
         B = ((byts[0] >> 5) & 0b111) | ((byts[1] & 0b1111111) << 3)
-        C = ((byts[1] >> 7) & 0b1) | ((byts[2] & 0b11111111) << 1) | ((byts[3] & 0b11111111) << 1 + 8) | (
-                    (byts[4] & 0b11111111) << 1 + 8 + 8)
+        C = ((byts[1] >> 7) & 0b1) | ((byts[2] & 0b11111111) << 1) | ((byts[3] & 0b11111111) << 1 + 8) | ((byts[4] & 0b11111111) << 1 + 8 + 8)
         return A, B, C
 
     def deserialize_read(byts):
@@ -33,9 +32,7 @@ def interpret(binary_file, memory_range, output_file):
     while pc < len(binary_data):
         # if len(binary_data[pc:pc + 5]) >= 21:
             word = int.from_bytes(binary_data[pc:pc + 5], 'big')
-            print((binary_data[0]))
             A = (word >> 32) & 0b11111
-            print(A)
 
 
             if A == 30:  # LOAD_CONST
@@ -49,18 +46,19 @@ def interpret(binary_file, memory_range, output_file):
                 data = binary_data[pc:pc + 4]
                 A, B, C =  deserialize_read(data)
                 print(f"READ_MEM: memory[{B}] = memory[{C}]")  # Debug
-                # memory[B] = memory[C]
+                memory[B] = memory[C]
                 pc += 4
             elif A == 18:  # WRITE_MEM
                 data = binary_data[pc:pc + 4]
                 A, B, C = deserialize_read(data)
                 print(f"WRITE_MEM: memory[{C}] = memory[{B}]")  # Debug
-                # memory[memory[C]] = memory[B]
+                memory[memory[C]] = memory[B]
                 pc += 4
             elif A == 22:  # UNARY_MINUS
                 data = binary_data[pc:pc + 5]
                 A, B, C, D = deserialize_minus(data)
-                memory[D] = memory[C] + B
+                print(A, B, C, D)
+                memory[D] = -(memory[memory[C] + B])
                 pc += 5
 
 
