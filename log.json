@@ -4,21 +4,21 @@
         "A": 30,
         "B": 322,
         "C": 476,
-        "bytes": "1e28ee0000"
+        "bytes": "5e28ee0000"
     },
     {
         "command": "READ_MEM",
         "A": 16,
         "B": 385,
         "C": 26,
-        "bytes": "18300d00"
+        "bytes": "30300d00"
     },
     {
         "command": "WRITE_MEM",
         "A": 18,
         "B": 283,
         "C": 477,
-        "bytes": "1a23ee00"
+        "bytes": "72a3ee00"
     },
     {
         "command": "UNARY_MINUS",
@@ -26,6 +26,6 @@
         "B": 403,
         "C": 322,
         "D": 439,
-        "bytes": "1e32093c08"
+        "bytes": "763220d46d"
     }
 ]
